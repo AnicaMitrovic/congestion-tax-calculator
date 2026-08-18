@@ -1,0 +1,10 @@
+{
+  "city": "",
+  "bands": [],
+  "dailyCapSek": 0,
+  "singleChargeWindowMinutes": 0,
+  "exemptVehicles": [],
+  "taxFreeWeekdays": [],
+  "taxFreeMonths": [],
+  "taxFreeDates": []
+}
