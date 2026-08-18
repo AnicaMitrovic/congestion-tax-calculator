@@ -26,4 +26,24 @@ public class CongestionTaxCalculatorTests
         var calculator = new CongestionTaxCalculator();
         Assert.Equal(60, calculator.GetTax(VehicleType.Car, SampleDay));
     }
+
+    [Theory]
+    [InlineData(VehicleType.Motorcycle)]
+    [InlineData(VehicleType.Bus)]
+    [InlineData(VehicleType.Emergency)]
+    [InlineData(VehicleType.Diplomat)]
+    [InlineData(VehicleType.Military)]
+    [InlineData(VehicleType.Foreign)]
+    public void ExemptVehicles_PayNothing(VehicleType vehicle)
+    {
+        var calculator = new CongestionTaxCalculator();
+        Assert.Equal(0, calculator.GetTax(vehicle, SampleDay));
+    }
+
+    [Fact]
+    public void Car_IsNotExempt()
+    {
+        var calculator = new CongestionTaxCalculator();
+        Assert.Equal(60, calculator.GetTax(VehicleType.Car, SampleDay));
+    }
 }

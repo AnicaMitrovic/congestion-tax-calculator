@@ -41,7 +41,7 @@ public class CongestionTaxCalculator
     private static bool IsTollFreeVehicle(VehicleType vehicle) =>
         TollFreeVehicles.Contains(vehicle);
 
-    public int GetTax(VehicleType vehicle, DateTime[] dates)
+    public int GetTax(VehicleType vehicle, DateTime[] dates) // handles total tax for one vehicle for one day
     {
         if (dates == null || dates.Length == 0) return 0;
 
@@ -96,7 +96,7 @@ public class CongestionTaxCalculator
         return 0;
     }
 
-    private Boolean IsTollFreeDate(DateTime date)
+    private bool IsTollFreeDate(DateTime date)
     {
         int year = date.Year;
         int month = date.Month;
