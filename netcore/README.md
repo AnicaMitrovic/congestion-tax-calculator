@@ -9,16 +9,6 @@ dotnet run --project src/CongestionTax.Api   # start the API
 
 Then open `/swagger`. `GET /api/cities` lists the cities that have rules loaded.
 
-Example request to `POST /api/tax/calculate`:
-
-```json
-{
-  "city": "gothenburg",
-  "vehicleType": "Car",
-  "passages": ["2013-02-08T06:20:27", "2013-02-08T15:47:00", "2013-02-08T16:48:00"]
-}
-```
-
 Example request to `POST /api/tax/calculate` using the sample dates for 2013-02-08:
 
 ```json
