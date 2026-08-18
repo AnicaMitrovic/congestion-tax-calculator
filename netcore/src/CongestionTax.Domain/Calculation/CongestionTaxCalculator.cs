@@ -12,8 +12,6 @@ public class CongestionTaxCalculator
         VehicleType vehicle,
         IEnumerable<DateTime> passages)
     {
-
-
         return null;
     }
 
@@ -30,46 +28,62 @@ public class CongestionTaxCalculator
         (new(18, 0),  new(18, 30),  8),
     ];
 
-    public int GetTax(Vehicle vehicle, DateTime[] dates)
+    private static readonly HashSet<VehicleType> TollFreeVehicles =
+    [
+        VehicleType.Motorcycle,
+        VehicleType.Bus,
+        VehicleType.Emergency,
+        VehicleType.Diplomat,
+        VehicleType.Military,
+        VehicleType.Foreign,
+    ];
+
+    private static bool IsTollFreeVehicle(VehicleType vehicle) =>
+        TollFreeVehicles.Contains(vehicle);
+
+    public int GetTax(VehicleType vehicle, DateTime[] dates)
     {
-        DateTime intervalStart = dates[0];
-        int totalFee = 0;
-        foreach (DateTime date in dates)
+        if (dates == null || dates.Length == 0) return 0;
+
+        // Skatteverket: the hour and the started minute decide the amount, so we don´t need seconds 
+        var passages = dates
+            .Select(d => new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0))
+            .OrderBy(d => d)
+            .ToArray();
+
+        int total = 0;
+        DateTime? windowStart = null;
+        int windowHighest = 0;
+
+        foreach (var passage in passages)
         {
-            int nextFee = GetTollFee(date, vehicle);
-            int tempFee = GetTollFee(intervalStart, vehicle);
+            int fee = GetTollFee(passage, vehicle);
 
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            long minutes = diffInMillies / 1000 / 60;
+            // free passage is not taxed, so it cannot start a 60-minute window
+            if (fee == 0) continue;
 
-            if (minutes <= 60)
+            bool outsideWindow = windowStart == null
+                || (passage - windowStart.Value).TotalMinutes > 60;
+
+            if (outsideWindow)
             {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
+                total += windowHighest;   // bank the previous window (0 on the first pass)
+                windowStart = passage;
+                windowHighest = fee;
             }
             else
             {
-                totalFee += nextFee;
+                windowHighest = Math.Max(windowHighest, fee);
             }
         }
-        if (totalFee > 60) totalFee = 60;
-        return totalFee;
+
+        total += windowHighest;           // bank the last window
+
+        if (total > 60) total = 60;
+        return total;
     }
 
-    private bool IsTollFreeVehicle(Vehicle vehicle)
-    {
-        if (vehicle == null) return false;
-        String vehicleType = vehicle.GetVehicleType();
-        return vehicleType.Equals(TollFreeVehicles.Motorcycle.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Tractor.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Emergency.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Diplomat.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Foreign.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Military.ToString());
-    }
-
-    public int GetTollFee(DateTime date, Vehicle vehicle)
+    public int GetTollFee(DateTime date, VehicleType vehicle)
     {
         if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
@@ -105,15 +119,5 @@ public class CongestionTaxCalculator
             }
         }
         return false;
-    }
-
-    private enum TollFreeVehicles
-    {
-        Motorcycle = 0,
-        Tractor = 1,
-        Emergency = 2,
-        Diplomat = 3,
-        Foreign = 4,
-        Military = 5
     }
 }
