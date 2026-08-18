@@ -1,5 +1,4 @@
 using CongestionTax.Domain.Rules;
-
 namespace CongestionTax.Domain.Calculation;
 
 public class CongestionTaxCalculator
@@ -17,6 +16,19 @@ public class CongestionTaxCalculator
 
         return null;
     }
+
+    private static readonly (TimeOnly Start, TimeOnly EndExclusive, int Amount)[] TariffBands =
+    [
+        (new(6, 0),   new(6, 30),   8),
+        (new(6, 30),  new(7, 0),   13),
+        (new(7, 0),   new(8, 0),   18),
+        (new(8, 0),   new(8, 30),  13),
+        (new(8, 30),  new(15, 0),   8),
+        (new(15, 0),  new(15, 30), 13),
+        (new(15, 30), new(17, 0),  18),
+        (new(17, 0),  new(18, 0),  13),
+        (new(18, 0),  new(18, 30),  8),
+    ];
 
     public int GetTax(Vehicle vehicle, DateTime[] dates)
     {
@@ -61,19 +73,13 @@ public class CongestionTaxCalculator
     {
         if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
-        int hour = date.Hour;
-        int minute = date.Minute;
+        var time = TimeOnly.FromDateTime(date);
 
-        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-        else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-        else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-        else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-        else if ((hour == 8 && minute >= 30) || (hour > 8 && hour <= 14)) return 8;   //fixed
-        else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-        else if (hour == 15 && minute >= 30 || hour == 16) return 18;              // fixed
-        else if (hour == 17) return 13;
-        else if (hour == 18 && minute <= 29) return 8;
-        else return 0;
+        foreach (var band in TariffBands)
+            if (time >= band.Start && time < band.EndExclusive)
+                return band.Amount;
+
+        return 0;
     }
 
     private Boolean IsTollFreeDate(DateTime date)
