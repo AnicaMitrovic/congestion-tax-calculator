@@ -6,6 +6,6 @@ public sealed record CalculateTaxRequest(string City, VehicleType VehicleType, D
 
 public sealed record ChargeDto(DateTime WindowStart, int Amount);
 
-public sealed record DailyBreakdown(DateOnly Date, int Total, int SubtotalBeforeCap, ChargeDto[] Charges);
+public sealed record DailyBreakdown(DateOnly Date, int Total, int SumOfCharges, ChargeDto[] Charges);
 
 public sealed record CalculateTaxResponse(string City, int Total, DailyBreakdown[] Days);

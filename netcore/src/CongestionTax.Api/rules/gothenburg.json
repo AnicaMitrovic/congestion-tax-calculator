@@ -1,10 +1,80 @@
 {
-  "city": "",
-  "bands": [],
-  "dailyCapSek": 0,
-  "singleChargeWindowMinutes": 0,
-  "exemptVehicles": [],
-  "taxFreeWeekdays": [],
-  "taxFreeMonths": [],
-  "taxFreeDates": []
+  "city": "gothenburg",
+  "dailyCapSek": 60,
+  "singleChargeWindowMinutes": 60,
+  "bands": [
+    {
+      "start": "06:00",
+      "endExclusive": "06:30",
+      "amount": 8
+    },
+    {
+      "start": "06:30",
+      "endExclusive": "07:00",
+      "amount": 13
+    },
+    {
+      "start": "07:00",
+      "endExclusive": "08:00",
+      "amount": 18
+    },
+    {
+      "start": "08:00",
+      "endExclusive": "08:30",
+      "amount": 13
+    },
+    {
+      "start": "08:30",
+      "endExclusive": "15:00",
+      "amount": 8
+    },
+    {
+      "start": "15:00",
+      "endExclusive": "15:30",
+      "amount": 13
+    },
+    {
+      "start": "15:30",
+      "endExclusive": "17:00",
+      "amount": 18
+    },
+    {
+      "start": "17:00",
+      "endExclusive": "18:00",
+      "amount": 13
+    },
+    {
+      "start": "18:00",
+      "endExclusive": "18:30",
+      "amount": 8
+    }
+  ],
+  "exemptVehicles": [
+    "Motorcycle",
+    "Bus",
+    "Emergency",
+    "Diplomat",
+    "Military",
+    "Foreign"
+  ],
+  "taxFreeWeekdays": [ "Saturday", "Sunday" ],
+  "taxFreeMonths": [ 7 ],
+  "taxFreeDates": [
+    "2013-01-01",
+    "2013-03-28",
+    "2013-03-29",
+    "2013-04-01",
+    "2013-04-30",
+    "2013-05-01",
+    "2013-05-08",
+    "2013-05-09",
+    "2013-06-05",
+    "2013-06-06",
+    "2013-06-21",
+    "2013-11-01",
+    "2013-12-24",
+    "2013-12-25",
+    "2013-12-26",
+    "2013-12-31"
+  ]
 }

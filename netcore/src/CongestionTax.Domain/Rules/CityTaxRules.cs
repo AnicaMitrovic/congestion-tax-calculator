@@ -1,15 +1,8 @@
 namespace CongestionTax.Domain.Rules;
 
-/// <summary>A tariff window and the amount charged for a passage inside it.</summary>
-public sealed record TariffBand(TimeOnly Start, TimeOnly EndExclusive, int Amount)
-{
-    public bool Contains(TimeOnly time) => throw new NotImplementedException();
-}
-
-/// <summary>The complete set of congestion tax parameters for one city.</summary>
 public sealed record CityTaxRules(
     string City,
-    IReadOnlyList<TariffBand> Bands,
+    IReadOnlyList<(TimeOnly Start, TimeOnly EndExclusive, int Amount)> Bands,
     int DailyCapSek,
     TimeSpan SingleChargeWindow,
     IReadOnlySet<VehicleType> ExemptVehicles,
@@ -17,7 +10,20 @@ public sealed record CityTaxRules(
     IReadOnlySet<int> TaxFreeMonths,
     IReadOnlySet<DateOnly> TaxFreeDates)
 {
-    public int FeeAt(DateTime passage) => throw new NotImplementedException();
+    public int FeeAt(DateTime passage)
+    {
+        var time = TimeOnly.FromDateTime(passage);
 
-    public bool IsTaxFreeDate(DateOnly date) => throw new NotImplementedException();
+        // start included, EndExclusive not. 06:30 belongs to the next band.
+        foreach (var band in Bands)
+            if (time >= band.Start && time < band.EndExclusive)
+                return band.Amount;
+
+        return 0;
+    }
+
+    public bool IsTaxFreeDate(DateOnly date) =>
+        TaxFreeWeekdays.Contains(date.DayOfWeek) ||
+        TaxFreeMonths.Contains(date.Month) ||
+        TaxFreeDates.Contains(date);
 }

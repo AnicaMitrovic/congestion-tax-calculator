@@ -7,11 +7,11 @@ public sealed record Charge(DateTime WindowStart, int Amount);
 public sealed record DailyTaxResult(
     DateOnly Date,
     int Total,
-    int SubtotalBeforeCap,
+    int SumOfCharges,
     IReadOnlyList<Charge> Charges);
 
 /// <summary>The tax owed across every day covered by a set of passages.</summary>
 public sealed record TaxCalculationResult(IReadOnlyList<DailyTaxResult> Days)
 {
-    public int Total => throw new NotImplementedException();
+    public int Total => Days.Sum(d => d.Total);
 }
